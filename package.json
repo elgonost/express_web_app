@@ -1,0 +1,26 @@
+{
+  "name": "express_web_app",
+  "version": "1.0.0",
+  "description": "Installation:",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "sql-template-strings": "^2.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elgonost/express_web_app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elgonost/express_web_app/issues"
+  },
+  "homepage": "https://github.com/elgonost/express_web_app#readme"
+}
