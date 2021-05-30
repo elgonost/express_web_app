@@ -1,38 +1,79 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>The bookShop</title>
-    </head>
-    <body style="background-color: lightgrey;">
-        <h1 style="font-size: 60px;"><b>Book Catalogue</b></h1>
-        <h3><i>Please insert book characteristis below: </i></h3>
 
-        <form id="form" action="google.com" target="_blank" method="post">
-            <label for="author">Author:</label><br>
-            <input type="text" id="author" name="author"><br><br>
+<head>
+    <meta charset="UTF-8">
+    <title>The bookShop</title>
+</head>
 
-            <laber for="title">Title:</laber><br>
-            <input type="text" id="title" name="title"><br><br>
+<body style="background-color: lightgrey;">
+    <h1 style="font-size: 60px;"><b>Book Catalogue</b></h1>
+    <h3><i>Please insert book characteristis below: </i></h3>
 
-            <label for="genre">Pick a genre:</label><br>
-            <select id="genre" name="genre">
-                <option value="Science fiction" selected>Science fiction</option>
-                <option value="Satire">Satire</option>
-                <option value="Drama">Drama</option>
-                <option value="Action and Adventure">Action and Adventure</option>
-                <option value="Romance">Romance</option>
-                <option value="Mystery">Mystery</option>
-                <option value="Horror">Horror</option>
-            </select><br><br>
+    <form id="form" target="_self" method="post">
+        <label for="author">Author:</label><br>
+        <input type="text" id="author" name="author"><br><br>
 
-            <label for="price">Price:</label><br>
-            <input type="text" id="price" name="price"><br><br>
+        <laber for="title">Title:</laber><br>
+        <input type="text" id="title" name="title"><br><br>
 
-            <input type="submit" value="Enter">
-        </form>
-        <script type="text/javascript">
-        
-        </script>
-    </body>
+        <label for="genre">Pick a genre:</label><br>
+        <select id="genre" name="genre">
+            <option value="Science fiction" selected>Science fiction</option>
+            <option value="Satire">Satire</option>
+            <option value="Drama">Drama</option>
+            <option value="Action and Adventure">Action and Adventure</option>
+            <option value="Romance">Romance</option>
+            <option value="Mystery">Mystery</option>
+            <option value="Horror">Horror</option>
+        </select><br><br>
+
+        <label for="price">Price:</label><br>
+        <input type="text" id="price" name="price"><br><br>
+
+        <input type="submit" id="submit-btn" value="Enter">
+    </form>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            //we ready baby
+            console.log("Hey there")
+            document.getElementById("submit-btn").addEventListener("click", function (e) {
+                e.preventDefault();
+                console.log("Button clicked");
+
+                const books = {
+                    'author': document.getElementById('author').value,
+                    'title': document.getElementById('title').value,
+                    'genre': document.getElementById('genre').value,
+                    'price': document.getElementById('price').value,
+                };
+
+                console.log(books);
+
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystancechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            // let divElem = document.getElementById('books');
+                            // const results = JSON.parse(xhr.responseText);
+
+                            // results.forEach(item)=> {
+                            //     divElem.innerHTML += `${item.author} ${item.title} ${item.genre} ${item.price}`;
+                            // };
+                            console.log("ALL GOOD")
+                        } else {
+                            console.log("ERROR")
+                        }
+                    }
+                }
+                xhr.open('POST', '/books', true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(books));
+
+            });
+
+        });
+    </script>
+</body>
+
 </html>

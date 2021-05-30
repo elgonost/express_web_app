@@ -8,14 +8,14 @@ db = mysql.createConnection({
    host: '127.0.0.1',
    user: 'root',
    password: 'password',
-   database: 'books_db'
+   database: 'books'
 })
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 
 app.get('/books', function (req, res) {
    let sql = `select * from books`;
-   db.query(sql, function(err, data, fields){
+   db.query(sql, function (err, data, fields) {
       if (err) throw err;
       res.json({
          data,
@@ -24,9 +24,9 @@ app.get('/books', function (req, res) {
    })
 });
 
-app.post('/books', function(req, res) {
+app.post('/books', function (req, res) {
    let sql = `insert into books (author, title, genre, price) values ('${req.body.author}', '${req.body.title}', '${req.body.genre}', '${req.body.price}')`;
-   db.query(sql, function(err, data, fields){
+   db.query(sql, function (err, data, fields) {
       if (err) throw err;
       res.json({
          data,
@@ -35,10 +35,10 @@ app.post('/books', function(req, res) {
    })
 })
 
-app.get('/books/:keyword', function(req, res){
+app.get('/books/:keyword', function (req, res) {
    let keyword = req.params.keyword
    let sql = `select * from books where title like '%${keyword}%'`
-   db.query(sql, function(err, data, fields){
+   db.query(sql, function (err, data, fields) {
       if (err) throw err;
       if (data.length === 0) {
          var message = "No book retrieved"
@@ -54,8 +54,8 @@ app.get('/books/:keyword', function(req, res){
 })
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname+'/index.html'));
-  });
+   res.sendFile(path.join(__dirname + '/index.html'));
+});
 
 var server = app.listen(8081, function () {
    var host = server.address().address
