@@ -4,6 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <title>The bookShop</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
 </head>
 
 <body style="background-color: lightgrey;">
@@ -30,50 +48,156 @@
 
         <label for="price">Price:</label><br>
         <input type="text" id="price" name="price"><br><br>
-
+        <p id="validation-msg" style="color:red"></p>
         <input type="submit" id="submit-btn" value="Enter">
+
     </form>
+    <br><br>
+    <input type="text" id="searchArea">
+    <input type="Button" id="search-btn" value="Search">
+    <p id="search-result"></p><br>
+
+    <table id='retrieved-books' style="display: none">
+        <th>Author</th>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Price</th>
+    </table>
+
     <script type="text/javascript">
+        function getForValidationMsg(books) {
+            var errorMessage = "Issues: ";
+            if (!books.author) {
+                errorMessage += 'Author is empty. '
+            }
+            if (!books.title) {
+                errorMessage += "Title is empty. "
+            }
+            if (!books.genre) {
+                errorMessage += "Genre is empty. "
+            }
+            if (!books.price) {
+                errorMessage += 'Price is empty. '
+            }
+            if (!isNumeric(books.price)) {
+                errorMessage += 'Price is not numeric. '
+            }
+            return errorMessage
+        }
+
+        function isNumeric(str) {
+            if (typeof str != "string") return false
+            return !isNaN(str) &&
+                !isNaN(parseFloat(str))
+        }
+
+        function populateTable(responseData) {
+            resp = JSON.parse(responseData)
+            document.getElementById("search-result").innerText = resp.message;
+            console.log("Create table now");
+
+            // delete existing table
+            var tableHeaderRowCount = 1;
+            var table = document.getElementById('retrieved-books')
+            var rowCount = table.rows.length;
+            for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                table.deleteRow(tableHeaderRowCount);
+            }
+
+            numberOfRows = resp.data.length;
+            if (numberOfRows) {
+                table.style.display = "block"
+                for (var i = 0; i < numberOfRows; i++) {
+
+                    var tr = document.createElement('tr');
+
+                    var td1 = document.createElement('td');
+                    var td2 = document.createElement('td');
+                    var td3 = document.createElement('td');
+                    var td4 = document.createElement('td');
+
+                    var authorText = document.createTextNode(resp.data[i].author);
+                    var titleText = document.createTextNode(resp.data[i].title);
+                    var genreText = document.createTextNode(resp.data[i].genre);
+                    var priceText = document.createTextNode(resp.data[i].price);
+
+                    td1.appendChild(authorText);
+                    td2.appendChild(titleText);
+                    td3.appendChild(genreText);
+                    td4.appendChild(priceText);
+
+                    tr.appendChild(td1);
+                    tr.appendChild(td2);
+                    tr.appendChild(td3);
+                    tr.appendChild(td4);
+
+                    table.appendChild(tr);
+                }
+            } else {
+                table.style.display = "none"
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function (event) {
-            //we ready baby
             console.log("Hey there")
             document.getElementById("submit-btn").addEventListener("click", function (e) {
                 e.preventDefault();
                 console.log("Button clicked");
 
-                const books = {
+                var books = {
                     'author': document.getElementById('author').value,
                     'title': document.getElementById('title').value,
                     'genre': document.getElementById('genre').value,
                     'price': document.getElementById('price').value,
                 };
 
-                console.log(books);
+                if ((books.author) && (books.title) && (books.genre) && (books.price) && (isNumeric(books.price))) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/books', true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(books));
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                console.log("Request was successful");
+                                document.getElementById("validation-msg").innerText = "";
+                            } else {
+                                console.log("ERROR")
+                            }
+                        }
+                    }
+                } else {
+                    var errorMessage = getForValidationMsg(books)
+                    document.getElementById("validation-msg").innerText = "Form data are invalid. " + errorMessage;
+                }
 
-                const xhr = new XMLHttpRequest();
-                xhr.onreadystancechange = function () {
+            });
+
+            document.getElementById("search-btn").addEventListener("click", function (e) {
+                console.log("Button clicked");
+
+                var keyword = document.getElementById("searchArea").value
+                var endpoint = '/books/' + keyword
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', endpoint, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send();
+                xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
-                            // let divElem = document.getElementById('books');
-                            // const results = JSON.parse(xhr.responseText);
-
-                            // results.forEach(item)=> {
-                            //     divElem.innerHTML += `${item.author} ${item.title} ${item.genre} ${item.price}`;
-                            // };
-                            console.log("ALL GOOD")
+                            console.log("Request was successful");
+                            populateTable(xhr.response)
                         } else {
                             console.log("ERROR")
                         }
                     }
                 }
-                xhr.open('POST', '/books', true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(JSON.stringify(books));
-
             });
-
-        });
+        })
     </script>
+
+
 </body>
 
 </html>
